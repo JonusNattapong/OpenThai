@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+venv/
+env/
+.ipynb_checkpoints/
+models/
+data/ThaiNER.jsonl
+*.onnx
+*.egg-info/
