@@ -26,8 +26,10 @@ class OpenThaiNER:
         onnx_path: str = None,
     ):
         self.model_name = model_name_or_path
-        self.onnx_path = onnx_path
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
+        try:
+            self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
+        except Exception:
+            self.tokenizer = AutoTokenizer.from_pretrained("Pavarissy/phayathaibert-thainer")
 
         if onnx_path:
             import onnxruntime as ort

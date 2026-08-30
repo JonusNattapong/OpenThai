@@ -140,3 +140,7 @@ def render_html_highlight(text: str, entities: List[Dict[str, Any]]) -> str:
         html_parts.append(text[cursor:])
 
     return f'<div style="line-height: 2.2; font-family: sans-serif; font-size: 16px;">{"".join(html_parts)}</div>'
+
+
+# Convenience alias
+render_html = render_html_highlight

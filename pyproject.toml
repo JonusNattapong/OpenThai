@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openthai-ner"
-version = "0.1.0"
-description = "Production-Ready Thai Named Entity Recognition (NER) powered by PhayaThaiBERT and OpenThai-NER-Corpus"
+version = "0.2.0"
+description = "Production-Ready Thai Named Entity Recognition (NER) with CRF, Focal Loss, and Multi-Backbone Ensemble"
 readme = "README.md"
 authors = [
     { name = "Nattapong Tapachoom" }

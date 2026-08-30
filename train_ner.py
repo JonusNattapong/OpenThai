@@ -212,6 +212,9 @@ def parse_args():
     parser.add_argument("--use_crf", action="store_true", help="Enable Linear-Chain CRF Layer with BIO constraints")
     parser.add_argument("--loss_type", default="ce", choices=["ce", "focal", "crf"], help="Loss function type (ce, focal, crf)")
     parser.add_argument("--focal_gamma", type=float, default=2.0, help="Focal loss gamma parameter")
+    parser.add_argument("--use_augmented", action="store_true", help="Use data/train_augmented.jsonl instead of train.jsonl")
+    parser.add_argument("--llrd", action="store_true", help="Enable Layer-wise Learning Rate Decay (LLRD)")
+    parser.add_argument("--llrd_decay", type=float, default=0.8, help="Layer-wise LR decay factor (default: 0.8)")
     return parser.parse_args()
 
 
@@ -300,16 +303,71 @@ def build_compute_metrics(id2label):
                 "f1": f1_score(true_labels, true_predictions),
                 "accuracy": accuracy_score(true_labels, true_predictions),
             }
-        return compute_metrics
+def create_optimizer_with_llrd(model, base_lr=2e-5, decay_rate=0.8, weight_decay=0.01, crf_lr=5e-4):
+    """
+    Creates an AdamW optimizer with Layer-wise Learning Rate Decay (LLRD).
+    Lower layers receive smaller learning rates to retain general Thai representations,
+    while classifier and CRF layers receive higher learning rates.
+    """
+    no_decay = ["bias", "LayerNorm.weight", "layer_norm.weight"]
+    optimizer_grouped_parameters = []
+
+    backbone = getattr(model, "roberta", getattr(model, "camembert", None))
+    if backbone is not None and hasattr(backbone, "encoder") and hasattr(backbone.encoder, "layer"):
+        num_layers = len(backbone.encoder.layer)
+
+        # 1. Embeddings
+        embed_lr = base_lr * (decay_rate ** (num_layers + 1))
+        optimizer_grouped_parameters.extend([
+            {
+                "params": [p for n, p in backbone.embeddings.named_parameters() if not any(nd in n for nd in no_decay)],
+                "weight_decay": weight_decay,
+                "lr": embed_lr,
+            },
+            {
+                "params": [p for n, p in backbone.embeddings.named_parameters() if any(nd in n for nd in no_decay)],
+                "weight_decay": 0.0,
+                "lr": embed_lr,
+            },
+        ])
+
+        # 2. Transformer layers (0 to num_layers - 1)
+        for layer_idx, layer in enumerate(backbone.encoder.layer):
+            layer_lr = base_lr * (decay_rate ** (num_layers - layer_idx))
+            optimizer_grouped_parameters.extend([
+                {
+                    "params": [p for n, p in layer.named_parameters() if not any(nd in n for nd in no_decay)],
+                    "weight_decay": weight_decay,
+                    "lr": layer_lr,
+                },
+                {
+                    "params": [p for n, p in layer.named_parameters() if any(nd in n for nd in no_decay)],
+                    "weight_decay": 0.0,
+                    "lr": layer_lr,
+                },
+            ])
+
+        # 3. Classifier head
+        head_params = [p for n, p in model.named_parameters() if "classifier" in n or "dropout" in n]
+        if head_params:
+            optimizer_grouped_parameters.append({
+                "params": head_params,
+                "weight_decay": weight_decay,
+                "lr": base_lr * 2.0,
+            })
+
+        # 4. CRF layer
+        crf_params = [p for n, p in model.named_parameters() if "crf" in n]
+        if crf_params:
+            optimizer_grouped_parameters.append({
+                "params": crf_params,
+                "weight_decay": 0.0,
+                "lr": crf_lr,
+            })
+
+        return torch.optim.AdamW(optimizer_grouped_parameters)
     else:
-        def compute_metrics(p):
-            predictions, labels = p
-            predictions = np.argmax(predictions, axis=2)
-            valid_mask = labels != -100
-            correct = (predictions[valid_mask] == labels[valid_mask]).sum()
-            total = valid_mask.sum()
-            return {"accuracy": float(correct) / float(total) if total > 0 else 0.0}
-        return compute_metrics
+        return torch.optim.AdamW(model.parameters(), lr=base_lr, weight_decay=weight_decay)
 
 
 def main():
@@ -328,8 +386,10 @@ def main():
 
     print(f"[Info] Loaded {len(label2id)} unique labels from {label_map_file}")
 
+    train_filename = "train_augmented.jsonl" if args.use_augmented and os.path.exists(os.path.join(args.data_dir, "train_augmented.jsonl")) else "train.jsonl"
+    print(f"[Info] Training with dataset: {train_filename}")
     data_files = {
-        "train": os.path.join(args.data_dir, "train.jsonl"),
+        "train": os.path.join(args.data_dir, train_filename),
         "validation": os.path.join(args.data_dir, "val.jsonl"),
         "test": os.path.join(args.data_dir, "test.jsonl"),
     }
@@ -419,6 +479,17 @@ def main():
 
     compute_metrics = build_compute_metrics(id2label)
 
+    custom_optimizers = (None, None)
+    if args.llrd:
+        print(f"[LLRD] Initializing Layer-wise Learning Rate Decay (base_lr={args.learning_rate}, decay={args.llrd_decay})...")
+        opt = create_optimizer_with_llrd(
+            model,
+            base_lr=args.learning_rate,
+            decay_rate=args.llrd_decay,
+            weight_decay=args.weight_decay,
+        )
+        custom_optimizers = (opt, None)
+
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -427,6 +498,7 @@ def main():
         processing_class=tokenizer,
         data_collator=data_collator,
         compute_metrics=compute_metrics,
+        optimizers=custom_optimizers,
         callbacks=[EarlyStoppingCallback(early_stopping_patience=2)],
     )
 
