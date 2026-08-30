@@ -42,4 +42,4 @@ Homepage = "https://huggingface.co/JonusNattapong/OpenThai-NER"
 Repository = "https://github.com/JonusNattapong/OpenThai"
 
 [tool.setuptools.packages.find]
-include = ["openthai_ner*"]
+include = ["openthai_ner*", "openthai_reranker*"]

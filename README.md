@@ -141,7 +141,44 @@ results = ner_onnx.predict("ธนาคารแห่งประเทศไ�
 
 ---
 
-## Training
+## 🎯 OpenThai-ReRanker (Cross-Encoder for RAG)
+
+`openthai_reranker` provides high-precision cross-encoder scoring for Retrieval-Augmented Generation (RAG) and semantic search pipelines.
+
+### Reranking Candidates in RAG
+
+```python
+from openthai_reranker import OpenThaiReranker
+
+reranker = OpenThaiReranker("airesearch/wangchanberta-base-att-spm-uncased")
+
+query = "อาการสำคัญของโรคเบาหวานมีอะไรบ้าง"
+documents = [
+    "การเดินทางไปเกาะเสม็ดสามารถขึ้นเรือข้ามฟากได้ที่ท่าเรือบ้านเพ",
+    "โรคเบาหวานเป็นภาวะที่มีน้ำตาลในเลือดสูง ผู้ป่วยมักปัสสาวะบ่อย กระหายน้ำ และน้ำหนักลดลงรวดเร็ว",
+    "กรมสรรพากรกำหนดเวลายื่นภาษีเงินได้บุคคลธรรมดาภายในวันที่ 8 เมษายน",
+    "อาการทั่วไปของเบาหวานชนิดที่ 2 คือแผลหายช้า ชาตามปลายมือปลายเท้า และอ่อนเพลีย"
+]
+
+# Rerank and extract top 2 most relevant passages
+ranked = reranker.rerank(query, documents, top_k=2)
+
+for item in ranked:
+    print(f"Rank {item['rank']}: [Score {item['relevance_score']:.4f}] {item['snippet']}")
+```
+
+### Training Cross-Encoder Re-Ranker
+```bash
+python train_reranker.py \
+  --model_name airesearch/wangchanberta-base-att-spm-uncased \
+  --epochs 3 \
+  --batch_size 16 \
+  --output_dir models/openthai-reranker-final
+```
+
+---
+
+## Training (NER)
 
 The training script is self-contained and handles dataset downloading, subword alignment, and metric logging automatically.
 
