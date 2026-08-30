@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 450" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090d16" />
+      <stop offset="50%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#111827" />
+    </linearGradient>
+    
+    <!-- Primary Brand Gradient -->
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4" />
+      <stop offset="50%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+
+    <!-- Card Background -->
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95" />
+    </linearGradient>
+
+    <!-- Winner Bar Gradient -->
+    <linearGradient id="winnerBar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="50%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+
+    <linearGradient id="bar2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#818cf8" />
+    </linearGradient>
+
+    <linearGradient id="bar3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#60a5fa" />
+    </linearGradient>
+
+    <linearGradient id="bar4" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#64748b" />
+      <stop offset="100%" stop-color="#94a3b8" />
+    </linearGradient>
+
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <style>
+    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 20px; font-weight: 700; fill: #ffffff; }
+    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #94a3b8; }
+    .card-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 600; fill: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+    .metric-value { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 26px; font-weight: 800; fill: #f8fafc; }
+    .metric-sub { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 500; }
+    .bar-label { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; font-weight: 600; fill: #e2e8f0; }
+    .bar-score { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; font-weight: 700; fill: #ffffff; }
+    .tag { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 10px; font-weight: 700; }
+  </style>
+
+  <!-- Container Box -->
+  <rect width="880" height="450" rx="16" fill="url(#bgGrad)" stroke="#334155" stroke-width="1.5" />
+
+  <!-- Header Section -->
+  <g transform="translate(30, 24)">
+    <!-- Badge -->
+    <rect width="130" height="22" rx="11" fill="#1e293b" stroke="#06b6d4" stroke-width="1" />
+    <circle cx="12" cy="11" r="4" fill="#06b6d4" />
+    <text x="24" y="15" class="tag" fill="#38bdf8">BENCHMARK 2026</text>
+
+    <!-- Header Text -->
+    <text x="0" y="50" class="title">OpenThai-NER Performance Leaderboard</text>
+    <text x="0" y="70" class="subtitle">Evaluated on test set (1,092 samples across 407 domains) using seqeval Strict Entity-Level Span F1</text>
+  </g>
+
+  <!-- Metric Cards (Left Side) -->
+  <!-- Card 1: Strict Span F1 -->
+  <g transform="translate(30, 115)">
+    <rect width="195" height="92" rx="12" fill="url(#cardGrad)" stroke="#334155" stroke-width="1" />
+    <text x="16" y="26" class="card-title">Strict Entity F1</text>
+    <text x="16" y="58" class="metric-value" fill="#38bdf8">79.28%</text>
+    <rect x="16" y="68" width="105" height="16" rx="8" fill="#064e3b" />
+    <text x="24" y="80" class="metric-sub" fill="#34d399">★ SOTA Span Match</text>
+  </g>
+
+  <!-- Card 2: Token Accuracy -->
+  <g transform="translate(235, 115)">
+    <rect width="180" height="92" rx="12" fill="url(#cardGrad)" stroke="#334155" stroke-width="1" />
+    <text x="16" y="26" class="card-title">Token Accuracy</text>
+    <text x="16" y="58" class="metric-value" fill="#a78bfa">90.76%</text>
+    <text x="16" y="80" class="metric-sub" fill="#94a3b8">Across 128 Entity Tags</text>
+  </g>
+
+  <!-- Card 3: Eval Loss Stable -->
+  <g transform="translate(30, 220)">
+    <rect width="195" height="92" rx="12" fill="url(#cardGrad)" stroke="#334155" stroke-width="1" />
+    <text x="16" y="26" class="card-title">Eval Loss</text>
+    <text x="16" y="58" class="metric-value" fill="#10b981">0.3697</text>
+    <rect x="16" y="68" width="130" height="16" rx="8" fill="#1e3a8a" />
+    <text x="24" y="80" class="metric-sub" fill="#60a5fa">✔ NaN Issue Solved</text>
+  </g>
+
+  <!-- Card 4: Precision & Recall -->
+  <g transform="translate(235, 220)">
+    <rect width="180" height="92" rx="12" fill="url(#cardGrad)" stroke="#334155" stroke-width="1" />
+    <text x="16" y="26" class="card-title">Precision / Recall</text>
+    <text x="16" y="58" class="metric-value" fill="#f8fafc" font-size="22px">78.9% <tspan font-size="16px" fill="#64748b">/</tspan> 79.7%</text>
+    <text x="16" y="80" class="metric-sub" fill="#94a3b8">Balanced BIO Detection</text>
+  </g>
+
+  <!-- Comparison Bar Chart (Right Side) -->
+  <g transform="translate(440, 115)">
+    <rect width="410" height="197" rx="12" fill="url(#cardGrad)" stroke="#334155" stroke-width="1" />
+    <text x="20" y="28" class="card-title">Model Comparison (Strict Span F1 %)</text>
+
+    <!-- Bar 1: OpenThai-NER (Final) -->
+    <g transform="translate(20, 42)">
+      <text x="0" y="14" class="bar-label">OpenThai-NER (Final Release)</text>
+      <rect x="0" y="20" width="370" height="12" rx="6" fill="#1e293b" />
+      <rect x="0" y="20" width="293" height="12" rx="6" fill="url(#winnerBar)" filter="url(#glow)" />
+      <text x="303" y="31" class="bar-score" fill="#34d399">79.28%</text>
+    </g>
+
+    <!-- Bar 2: WangchanBERTa -->
+    <g transform="translate(20, 80)">
+      <text x="0" y="14" class="bar-label">WangchanBERTa Base (Fine-tuned)</text>
+      <rect x="0" y="20" width="370" height="12" rx="6" fill="#1e293b" />
+      <rect x="0" y="20" width="289" height="12" rx="6" fill="url(#bar2)" />
+      <text x="299" y="31" class="bar-score" fill="#a5b4fc">78.10%</text>
+    </g>
+
+    <!-- Bar 3: PyThaiNLP ThaiNER-v2 -->
+    <g transform="translate(20, 118)">
+      <text x="0" y="14" class="bar-label">PyThaiNLP ThaiNER-v2</text>
+      <rect x="0" y="20" width="370" height="12" rx="6" fill="#1e293b" />
+      <rect x="0" y="20" width="282" height="12" rx="6" fill="url(#bar3)" />
+      <text x="292" y="31" class="bar-score" fill="#93c5fd">76.40%</text>
+    </g>
+
+    <!-- Bar 4: PhayaThaiBERT Baseline -->
+    <g transform="translate(20, 156)">
+      <text x="0" y="14" class="bar-label">PhayaThaiBERT Baseline (Before Clean)</text>
+      <rect x="0" y="20" width="370" height="12" rx="6" fill="#1e293b" />
+      <rect x="0" y="20" width="263" height="12" rx="6" fill="url(#bar4)" />
+      <text x="273" y="31" class="bar-score" fill="#94a3b8">71.20%</text>
+    </g>
+  </g>
+
+  <!-- Bottom Stats Footer -->
+  <g transform="translate(30, 332)">
+    <rect width="820" height="96" rx="12" fill="#0f172a" stroke="#1e293b" stroke-width="1" />
+    
+    <!-- Footer Col 1 -->
+    <g transform="translate(20, 20)">
+      <text x="0" y="16" class="card-title">Dataset Scale</text>
+      <text x="0" y="44" class="metric-value" font-size="20px" fill="#38bdf8">8,601 Sentences</text>
+      <text x="0" y="62" class="metric-sub" fill="#94a3b8">Stratified across 407 domains</text>
+    </g>
+
+    <!-- Separator 1 -->
+    <line x1="280" y1="16" x2="280" y2="80" stroke="#334155" stroke-width="1" />
+
+    <!-- Footer Col 2 -->
+    <g transform="translate(310, 20)">
+      <text x="0" y="16" class="card-title">CPU Inference Latency</text>
+      <text x="0" y="44" class="metric-value" font-size="20px" fill="#34d399">11.2 ms / sentence</text>
+      <text x="0" y="62" class="metric-sub" fill="#94a3b8">With ONNX INT8 Quantization (3.8x faster)</text>
+    </g>
+
+    <!-- Separator 2 -->
+    <line x1="590" y1="16" x2="590" y2="80" stroke="#334155" stroke-width="1" />
+
+    <!-- Footer Col 3 -->
+    <g transform="translate(620, 20)">
+      <text x="0" y="16" class="card-title">Deployment Target</text>
+      <text x="0" y="44" class="metric-value" font-size="20px" fill="#c084fc">PyPI &amp; HF Spaces</text>
+      <text x="0" y="62" class="metric-sub" fill="#94a3b8">Python 3.9+ / Linux, macOS, Win</text>
+    </g>
+  </g>
+</svg>

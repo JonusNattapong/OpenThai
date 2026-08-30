@@ -158,6 +158,10 @@ python scripts/evaluate_benchmark.py \
 
 ## 📊 ผลการประเมินรอบ Final บนชุดทดสอบ (Test Set Evaluation)
 
+<p align="center">
+  <img src="assets/benchmark.svg" alt="OpenThai-NER Benchmark Leaderboard" width="100%">
+</p>
+
 ผลการทดสอบจริงบนชุดข้อมูลทดสอบ `data/test.jsonl` (1,092 ประโยค ครอบคลุม 407 Domains) โดยวัดผลแบบ Strict Entity-Level Span Matching ด้วย `seqeval`:
 
 | เมตริก (Metric) | ค่าที่วัดได้ (Final Result) | สถานะเดิม | หมายเหตุ |
