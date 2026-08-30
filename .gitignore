@@ -10,3 +10,5 @@ models/
 data/ThaiNER.jsonl
 *.onnx
 *.egg-info/
+dist/
+build/

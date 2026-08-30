@@ -209,6 +209,9 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     parser.add_argument("--no_cuda", action="store_true", help="Force CPU training")
     parser.add_argument("--label_all_subwords", action="store_true", help="Assign I-label to subsequent subwords instead of -100")
+    parser.add_argument("--use_crf", action="store_true", help="Enable Linear-Chain CRF Layer with BIO constraints")
+    parser.add_argument("--loss_type", default="ce", choices=["ce", "focal", "crf"], help="Loss function type (ce, focal, crf)")
+    parser.add_argument("--focal_gamma", type=float, default=2.0, help="Focal loss gamma parameter")
     return parser.parse_args()
 
 
@@ -334,13 +337,34 @@ def main():
     print(f"[Info] Dataset splits: train={len(raw_datasets['train'])}, val={len(raw_datasets['validation'])}, test={len(raw_datasets['test'])}")
 
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
-    model = AutoModelForTokenClassification.from_pretrained(
-        args.model_name,
-        num_labels=len(label2id),
-        id2label=id2label,
-        label2id=label2id,
-        ignore_mismatched_sizes=True,
-    )
+
+    if args.use_crf or args.loss_type in ("focal", "crf"):
+        from openthai_ner.model_crf import OpenThaiNERWithCRF
+        from openthai_ner.losses import compute_class_weights
+
+        tag_counts = mapping_data.get("tag_counts", {})
+        class_weights = compute_class_weights(tag_counts, label2id) if args.loss_type in ("focal", "ce") else None
+        if class_weights is not None:
+            class_weights = class_weights.to("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
+
+        print(f"[Model] Initializing OpenThaiNERWithCRF (use_crf={args.use_crf}, loss_type={args.loss_type})...")
+        model = OpenThaiNERWithCRF.from_backbone(
+            args.model_name,
+            num_labels=len(label2id),
+            id2label=id2label,
+            label2id=label2id,
+            use_crf=args.use_crf,
+            loss_type=args.loss_type,
+            class_weights=class_weights,
+        )
+    else:
+        model = AutoModelForTokenClassification.from_pretrained(
+            args.model_name,
+            num_labels=len(label2id),
+            id2label=id2label,
+            label2id=label2id,
+            ignore_mismatched_sizes=True,
+        )
 
     tokenized_datasets = raw_datasets.map(
         lambda x: tokenize_and_align_labels(

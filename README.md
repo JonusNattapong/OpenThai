@@ -23,10 +23,15 @@
    - เชื่อม SentencePiece Subwords (สัญลักษณ์ `_`) กลับเป็นคำภาษาไทยเต็มคำอัตโนมัติ
    - คืนค่า Character Start & End Index ตรงตามตำแหน่งตัวอักษรจริงในประโยค
    - รองรับทั้ง PyTorch (GPU/CPU) และ ONNX Runtime
-4. **ONNX Export & INT8 Quantization**:
+4. **สถาปัตยกรรมขั้นสูง (CRF Layer & Focal Loss)**:
+   - เพิ่ม **Linear-Chain CRF Layer** บังคับกฎ Transition Matrix ด้วย Viterbi Decoding ป้องกันแท็กผิดไวยากรณ์ 100%
+   - เพิ่ม **Focal Loss** และ Inverse Class Frequency Weights ดัน Recall ของ Entity หายาก/เฉพาะทาง (เช่น `LAW`, `DISEASE`)
+5. **ONNX Export & INT8 Quantization**:
    - แปลงโมเดลเพื่อลดขนาดลง ~50% และเร่งความเร็วการประมวลผลบน CPU เร็วขึ้น 3–5 เท่า
-5. **Interactive Web Demo (Gradio)**:
-   - พร้อมนำไปรันบน Hugging Face Spaces ทันที
+6. **SOTA Benchmarking Suite**:
+   - สคริปต์เปรียบเทียบประสิทธิภาพเทียบกับ `WangchanBERTa` และ `PyThaiNLP ThaiNER`
+7. **PyPI & Hugging Face Space Ready**:
+   - พร้อม Build Package สู่ PyPI และมีโฟลเดอร์ `space_deploy/` สำหรับเปิด Live Web Demo ทันที
 
 ---
 
@@ -172,6 +177,36 @@ python scripts/evaluate_benchmark.py \
 - **วัน เวลา และตัวเลข:** `DATE`, `TIME`, `MONEY`, `PERCENT`
 - **ข้อมูลติดต่อและไอดี:** `PHONE`, `EMAIL`, `URL`, `ID`, `ACCOUNT`
 - **เฉพาะทาง:** `LAW`, `PRODUCT`, `DISEASE`, `TECHNOLOGY`
+
+---
+
+## 🏆 SOTA Benchmarking Suite
+
+ทดสอบเปรียบเทียบโมเดลกับ SOTA อื่นๆ ในไทย (เช่น `WangchanBERTa`, `PyThaiNLP ThaiNER`):
+```bash
+python scripts/benchmark_sota.py --test_file data/test.jsonl --samples 100
+```
+
+---
+
+## 📦 การ Build และ Publish สู่ PyPI (`pip install openthai-ner`)
+
+สร้างไฟล์ Wheel `.whl` และ Source Distribution `.tar.gz` พร้อมตรวจสอบความถูกต้องด้วย `twine`:
+```bash
+# 1. Build และ Validate แพ็กเกจ
+python scripts/build_package.py
+
+# 2. อัปโหลดขึ้น PyPI
+twine upload dist/*
+```
+
+---
+
+## 🌐 การ Deploy ขึ้น Hugging Face Spaces (Live Web Demo)
+
+เราได้จัดเตรียมโฟลเดอร์ `space_deploy/` ซึ่งเป็น Standalone Space ที่พร้อมใช้งาน:
+1. สร้าง New Space บน [Hugging Face Spaces](https://huggingface.co/spaces) (เลือก Gradio SDK)
+2. คัดลอกไฟล์จากโฟลเดอร์ `space_deploy/` ไปยัง Space Repo แล้ว Push ขึ้นได้ทันที
 
 ---
 
